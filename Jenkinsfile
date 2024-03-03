@@ -20,7 +20,7 @@ pipeline {
 
         stage('Git Checkout') {
             steps {
-                git branch: 'Jenkins-CICD', url: 'https://github.com/Pipe-Cruz/final-lab.git' 
+                git branch: 'Jenkins-CICD', url: 'https://github.com/Pipe-Cruz/DevSecOps-Project.git' 
             }
         }
         
@@ -28,7 +28,7 @@ pipeline {
             steps {
                 script {
                     withSonarQubeEnv('sonar-server') {
-                    sh "$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectKey=Final-lab -Dsonar.projectName=Final-lab"
+                    sh "$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectKey=DevSecOps-project -Dsonar.projectName=DevSecOps-project"
                     }
                     /*
                     withCredentials([usernamePassword(credentialsId: 'sonarAPI-token', usernameVariable: 'SONARQUBE_USERNAME', passwordVariable: 'SONARQUBE_PASSWORD')]) {
@@ -81,7 +81,7 @@ pipeline {
                 sh "trivy fs -f json -o trivy-filesystem-report.json ."   
             }
         }
-        */
+        
         stage('Build & Tag Docker Image') {
             steps {
                 script {
@@ -97,7 +97,7 @@ pipeline {
             steps {
                 script {
                     sh "trivy image -f json -o trivy-image-report.json pipe7cruz/netflix:latest"
-                    /*
+                    
                     def trivyReportJson = readFile(file: 'trivy-image-report.json')
                     def trivyReport = new groovy.json.JsonSlurper().parseText(trivyReportJson)
                     def severities = trivyReport.Results.Vulnerabilities.collect { it.Severity }.flatten()
@@ -106,7 +106,7 @@ pipeline {
                     } else {
                         echo "Trivy Image Passed."
                     }
-                    */
+                    
                 }
             }
         }
@@ -143,16 +143,16 @@ pipeline {
                 }
             }
         }
-
+        */
     }
-    
+    /*
     post {
         always {
             archiveArtifacts 'dependency-check-report.xml'
-            //archiveArtifacts 'trivy-filesystem-report.json'
+            archiveArtifacts 'trivy-filesystem-report.json'
             archiveArtifacts 'trivy-image-report.json'
             archiveArtifacts 'owasp-zap-report.html'
         }
     }
-    
+    */
 }
