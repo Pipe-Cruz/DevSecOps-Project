@@ -58,7 +58,8 @@ pipeline {
         stage('Dependency-Check Scan') {
             steps {
                 script {
-                    dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=53c53bc6-971a-4d13-be42-b5673aa6364b', odcInstallation: 'DP-Check'
+                    def apiKeyCredential = credentials('DP-check-token')
+                    dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=${apiKeyCredential}', odcInstallation: 'DP-Check'
                     dependencyCheckPublisher pattern: 'dependency-check-report.xml'
                     /*
                     def vulnerabilitiesXml = readFile('/var/lib/jenkins/workspace/netflix/dependency-check-report.xml')
