@@ -97,7 +97,7 @@ pipeline {
         stage('Build & Tag Docker Image') {
             steps {
                 script {
-                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                    withDockerRegistry(credentialsId: 'dockerhub-token', toolName: 'docker') {
                         sh "docker build --build-arg TMDB_V3_API_KEY=a39af0296e3f125c9e57ba803453c93a -t netflix ."
                         sh "docker tag netflix pipe7cruz/netflix:latest "
                     }
