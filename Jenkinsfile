@@ -18,12 +18,22 @@ pipeline {
             }
         }
 
+        //SECRET SCANNING
         stage('Git Checkout') {
             steps {
                 git branch: 'Jenkins-CICD', url: 'https://github.com/Pipe-Cruz/DevSecOps-Project.git' 
             }
         }
         
+        stage('GitLeaks Scan') {
+            steps {
+                script {
+                    sh 'docker run -v ${WORKSPACE}:/path ghcr.io/gitleaks/gitleaks:latest --path="/path" -f=gitleaks-report.json'
+                }
+            }
+        }
+
+        //SAST
         stage('SonarQube Scan') {
             steps {
                 script {
@@ -55,6 +65,7 @@ pipeline {
             }
         }
         
+        //SCA
         stage('Dependency-Check Scan') {
             steps {
                 script {
@@ -94,6 +105,7 @@ pipeline {
             }
         }
         
+        //IMAGE SECURITY
         stage('Trivy Image Scan') {
             steps {
                 script {
@@ -132,6 +144,7 @@ pipeline {
             }
         }
         
+        //DAST
         stage('OWASP ZAP Scan') {
             steps {
                 script {
