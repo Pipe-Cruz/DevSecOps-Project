@@ -150,6 +150,7 @@ pipeline {
             steps {
                 script {
                     sh "docker pull owasp/zap2docker-stable:latest"
+                    sh "docker rm -f owasp || true"
                     sh "docker run -dt --name owasp owasp/zap2docker-stable /bin/bash"
                     sh "docker exec owasp mkdir /zap/wrk"
                     sh "docker exec owasp zap-baseline.py -t \${EC2_URL}:8081 -r owasp-zap-report.html -I"
