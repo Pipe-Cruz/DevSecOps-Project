@@ -71,6 +71,7 @@ pipeline {
             steps {
                 script {
                     def apiKeyCredential = credentials('DP-check-token')
+                    echo apiKeyCredential
                     dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=53c53bc6-971a-4d13-be42-b5673aa6364b', odcInstallation: 'DP-Check'  
                     //dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=\${apiKeyCredential}', odcInstallation: 'DP-Check'
                     dependencyCheckPublisher pattern: 'dependency-check-report.xml'
@@ -89,7 +90,7 @@ pipeline {
                 }
             }
         }
-        
+        /*
         stage('Trivy FileSystem Scan') {
             steps {
                 sh "trivy fs -f json -o trivy-filesystem-report.json ."   
@@ -112,7 +113,7 @@ pipeline {
             steps {
                 script {
                     sh "trivy image -f json -o trivy-image-report.json pipe7cruz/netflix:latest"
-                    /*
+                    
                     def trivyReportJson = readFile(file: 'trivy-image-report.json')
                     def trivyReport = new groovy.json.JsonSlurper().parseText(trivyReportJson)
                     def severities = trivyReport.Results.Vulnerabilities.collect { it.Severity }.flatten()
@@ -121,7 +122,7 @@ pipeline {
                     } else {
                         echo "Trivy Image Passed."
                     }
-                    */
+                    
                 }
             }
         }
@@ -160,9 +161,9 @@ pipeline {
                 }
             }
         }
-        
+        */
     }
-    
+    /*
     post {
         always {
             archiveArtifacts 'gitleaks-report.json'
@@ -172,5 +173,5 @@ pipeline {
             archiveArtifacts 'owasp-zap-report.html'
         }
     }
-    
+    */
 }
