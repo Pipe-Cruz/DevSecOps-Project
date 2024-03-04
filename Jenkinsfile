@@ -28,7 +28,7 @@ pipeline {
         stage('GitLeaks Scan') {
             steps {
                 script {
-                    sh 'docker run -v ${WORKSPACE}:/path ghcr.io/gitleaks/gitleaks:latest --path="/path" -f=gitleaks-report.json'
+                    sh 'docker run -v \${WORKSPACE}:/path ghcr.io/gitleaks/gitleaks:latest -r="/path" -f=gitleaks-report.json'
                 }
             }
         }
@@ -162,6 +162,7 @@ pipeline {
     
     post {
         always {
+            archiveArtifacts 'gitleaks-report.json'
             archiveArtifacts 'dependency-check-report.xml'
             archiveArtifacts 'trivy-filesystem-report.json'
             archiveArtifacts 'trivy-image-report.json'
