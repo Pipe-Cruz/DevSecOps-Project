@@ -71,7 +71,7 @@ pipeline {
             steps {
                 script {
                     def apiKeyCredential = credentials('DP-check-token')
-                    dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=${apiKeyCredential}', odcInstallation: 'DP-Check'
+                    dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=\${apiKeyCredential}', odcInstallation: 'DP-Check'
                     dependencyCheckPublisher pattern: 'dependency-check-report.xml'
                     /*
                     def vulnerabilitiesXml = readFile('/var/lib/jenkins/workspace/netflix/dependency-check-report.xml')
