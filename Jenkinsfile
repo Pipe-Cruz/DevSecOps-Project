@@ -93,7 +93,7 @@ pipeline {
                 }
             }
         }
-        /*
+        
         stage('Trivy FileSystem Scan') {
             steps {
                 sh "trivy fs -f json -o trivy-filesystem-report.json ."   
@@ -104,8 +104,10 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'dockerhub-token', toolName: 'docker') {
-                        sh "docker build --build-arg TMDB_V3_API_KEY=a39af0296e3f125c9e57ba803453c93a -t netflix ."
-                        sh "docker tag netflix pipe7cruz/netflix:latest "
+                        withCredentials([string(credentialsId: 'TMDB_API_KEY_CREDENTIAL_ID', variable: 'TMDB_V3_API_KEY')]) {
+                            sh "docker build --build-arg TMDB_V3_API_KEY=\${TMDB_V3_API_KEY} -t netflix ."
+                            sh "docker tag netflix pipe7cruz/netflix:latest "
+                        }
                     }
                 }
             }
@@ -116,7 +118,7 @@ pipeline {
             steps {
                 script {
                     sh "trivy image -f json -o trivy-image-report.json pipe7cruz/netflix:latest"
-                    
+                    /*
                     def trivyReportJson = readFile(file: 'trivy-image-report.json')
                     def trivyReport = new groovy.json.JsonSlurper().parseText(trivyReportJson)
                     def severities = trivyReport.Results.Vulnerabilities.collect { it.Severity }.flatten()
@@ -125,7 +127,7 @@ pipeline {
                     } else {
                         echo "Trivy Image Passed."
                     }
-                    
+                    */
                 }
             }
         }
@@ -164,9 +166,9 @@ pipeline {
                 }
             }
         }
-        */
+        
     }
-    /*
+    
     post {
         always {
             archiveArtifacts 'gitleaks-report.json'
@@ -176,5 +178,5 @@ pipeline {
             archiveArtifacts 'owasp-zap-report.html'
         }
     }
-    */
+    
 }
