@@ -127,7 +127,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    withDockerRegistry(credentialsId: 'docker-cred', toolName:'docker'){              
+                    withDockerRegistry(credentialsId: 'dockerhub-token', toolName:'docker'){              
                         sh "docker push pipe7cruz/netflix:latest"
                     }
                 }
