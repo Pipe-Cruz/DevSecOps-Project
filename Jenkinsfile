@@ -8,6 +8,7 @@ pipeline {
 
     environment {
         SCANNER_HOME= tool 'sonar-scanner'
+        EC2_URL = 'http://44.194.185.232'
     }
 
     stages {
@@ -151,7 +152,7 @@ pipeline {
                     sh "docker pull owasp/zap2docker-stable:latest"
                     sh "docker run -dt --name owasp owasp/zap2docker-stable /bin/bash"
                     sh "docker exec owasp mkdir /zap/wrk"
-                    sh "docker exec owasp zap-baseline.py -t http://54.145.218.228:8081 -r owasp-zap-report.html -I"
+                    sh "docker exec owasp zap-baseline.py -t \${EC2_URL}:8081 -r owasp-zap-report.html -I"
                     sh "docker cp owasp:/zap/wrk/owasp-zap-report.html \${WORKSPACE}/owasp-zap-report.html"
                     sh "docker rm -f owasp"
                 }
