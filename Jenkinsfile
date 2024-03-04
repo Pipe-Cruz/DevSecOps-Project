@@ -142,7 +142,7 @@ pipeline {
                 }
             }
         }
-        
+        /*
         stage('Deploy to container') {
             steps {
                 script {
@@ -152,8 +152,23 @@ pipeline {
                 }
             }
         }
-        
+        */
+        stage('Deploy to Minikube') {
+            steps {
+                script {
+                sh 'kubectl apply -f kubernetes-deployment.yaml'
+                //Esperar a que los pods estén en funcionamiento antes de continuar
+                sh 'kubectl wait --for=condition=ready pod -l app=netflix --timeout=300s'
+                // Obtiene la dirección IP y el puerto del servicio expuesto
+                def serviceIp = sh(script: 'minikube service netflix-service --url', returnStdout: true).trim()
+                echo "La aplicación está disponible en: \${serviceIp}"
+                }
+            }
+        }
+
+
         //DAST
+        /*
         stage('OWASP ZAP Scan') {
             steps {
                 script {
@@ -167,7 +182,7 @@ pipeline {
                 }
             }
         }
-        
+        */
     }
     
     post {
@@ -176,7 +191,7 @@ pipeline {
             archiveArtifacts 'dependency-check-report.xml'
             archiveArtifacts 'trivy-filesystem-report.json'
             archiveArtifacts 'trivy-image-report.json'
-            archiveArtifacts 'owasp-zap-report.html'
+            //archiveArtifacts 'owasp-zap-report.html'
         }
     }
     
