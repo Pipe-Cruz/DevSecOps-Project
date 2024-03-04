@@ -70,23 +70,26 @@ pipeline {
         stage('Dependency-Check Scan') {
             steps {
                 script {
-                    def apiKeyCredential = credentials('DP-check-token')
-                    echo apiKeyCredential
-                    dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=53c53bc6-971a-4d13-be42-b5673aa6364b', odcInstallation: 'DP-Check'  
-                    //dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=\${apiKeyCredential}', odcInstallation: 'DP-Check'
-                    dependencyCheckPublisher pattern: 'dependency-check-report.xml'
-                    /*
-                    def vulnerabilitiesXml = readFile('/var/lib/jenkins/workspace/netflix/dependency-check-report.xml')
-                    def criticalVulnerabilities = vulnerabilitiesXml.contains('<severity>CRITICAL</severity>') ? 1 : 0
-                    def highVulnerabilities = vulnerabilitiesXml.contains('<severity>HIGH</severity>') ? 1 : 0
-                    def mediumVulnerabilities = vulnerabilitiesXml.contains('<severity>MEDIUM</severity>') ? 1 : 0
+                    withCredentials([string(credentialsId: 'DP-check-token', variable: 'apiKeyDP')]) {
+                        dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=\${apiKeyDP}', odcInstallation: 'DP-Check'
+                        dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+                        
+                        /*
+                        def vulnerabilitiesXml = readFile('/var/lib/jenkins/workspace/netflix/dependency-check-report.xml')
+                        def criticalVulnerabilities = vulnerabilitiesXml.contains('<severity>CRITICAL</severity>') ? 1 : 0
+                        def highVulnerabilities = vulnerabilitiesXml.contains('<severity>HIGH</severity>') ? 1 : 0
+                        def mediumVulnerabilities = vulnerabilitiesXml.contains('<severity>MEDIUM</severity>') ? 1 : 0
 
-                    if (criticalVulnerabilities >  0 || highVulnerabilities > 0 || mediumVulnerabilities > 0) {
-                        error "SCA: Pipeline failure due to medium, high, or critical category vulnerabilities in Dependency-Check."
-                    } else {
-                        echo "Dependency-Check passed."
+                        if (criticalVulnerabilities >  0 || highVulnerabilities > 0 || mediumVulnerabilities > 0) {
+                            error "SCA: Pipeline failure due to medium, high, or critical category vulnerabilities in Dependency-Check."
+                        } else {
+                            echo "Dependency-Check passed."
+                        }
+                        */
                     }
-                    */
+                    
+                    
+
                 }
             }
         }
