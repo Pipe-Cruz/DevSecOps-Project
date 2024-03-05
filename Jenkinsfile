@@ -152,6 +152,8 @@ pipeline {
         stage('Deploy to Minikube') {
             steps {
                 script {
+                    // Iniciar Minikube si no está en ejecución
+                    sh 'minikube start'
                     // Imprimir información del clúster de Kubernetes y contextos configurados
                     sh 'kubectl config get-contexts'
                     sh 'kubectl config current-context'
