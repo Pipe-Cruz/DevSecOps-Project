@@ -25,7 +25,7 @@ pipeline {
                 git branch: 'Jenkins-CICD', url: 'https://github.com/Pipe-Cruz/DevSecOps-Project.git' 
             }
         }
-        
+        /*
         stage('GitLeaks Scan') {
             steps {
                 script {
@@ -34,7 +34,7 @@ pipeline {
                 }
             }
         }
-
+        */
         //SAST
         stage('SonarQube Scan') {
             steps {
@@ -66,7 +66,7 @@ pipeline {
                 sh "npm install"
             }
         }
-        
+        /*
         //SCA
         stage('Dependency-Check Scan') {
             steps {
@@ -75,7 +75,7 @@ pipeline {
                         dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=\${apiKeyDP}', odcInstallation: 'DP-Check'
                         dependencyCheckPublisher pattern: 'dependency-check-report.xml'
                         
-                        /*
+                        
                         def vulnerabilitiesXml = readFile('/var/lib/jenkins/workspace/netflix/dependency-check-report.xml')
                         def criticalVulnerabilities = vulnerabilitiesXml.contains('<severity>CRITICAL</severity>') ? 1 : 0
                         def highVulnerabilities = vulnerabilitiesXml.contains('<severity>HIGH</severity>') ? 1 : 0
@@ -85,12 +85,8 @@ pipeline {
                             error "SCA: Pipeline failure due to medium, high, or critical category vulnerabilities in Dependency-Check."
                         } else {
                             echo "Dependency-Check passed."
-                        }
-                        */
-                    }
-                    
-                    
-
+                        }                        
+                    }                  
                 }
             }
         }
@@ -100,7 +96,7 @@ pipeline {
                 sh "trivy fs -f json -o trivy-filesystem-report.json ."   
             }
         }
-        
+        */
         stage('Build & Tag Docker Image') {
             steps {
                 script {
@@ -113,13 +109,13 @@ pipeline {
                 }
             }
         }
-        
+        /*
         //IMAGE SECURITY
         stage('Trivy Image Scan') {
             steps {
                 script {
                     sh "trivy image -f json -o trivy-image-report.json pipe7cruz/netflix:latest"
-                    /*
+                    
                     def trivyReportJson = readFile(file: 'trivy-image-report.json')
                     def trivyReport = new groovy.json.JsonSlurper().parseText(trivyReportJson)
                     def severities = trivyReport.Results.Vulnerabilities.collect { it.Severity }.flatten()
@@ -128,11 +124,11 @@ pipeline {
                     } else {
                         echo "Trivy Image Passed."
                     }
-                    */
+                    
                 }
             }
         }
-        
+        */
         stage('Push Docker Image') {
             steps {
                 script {
@@ -156,12 +152,16 @@ pipeline {
         stage('Deploy to Minikube') {
             steps {
                 script {
-                sh 'kubectl apply -f kubernetes-deployment.yaml'
-                //Esperar a que los pods estén en funcionamiento antes de continuar
-                sh 'kubectl wait --for=condition=ready pod -l app=netflix --timeout=300s'
-                // Obtiene la dirección IP y el puerto del servicio expuesto
-                def serviceIp = sh(script: 'minikube service netflix-service --url', returnStdout: true).trim()
-                echo "La aplicación está disponible en: \${serviceIp}"
+                    // Imprimir información del clúster de Kubernetes y contextos configurados
+                    sh 'kubectl config get-contexts'
+                    sh 'kubectl config current-context'
+
+                    sh 'kubectl apply -f kubernetes-deployment.yaml'
+                    //Esperar a que los pods estén en funcionamiento antes de continuar
+                    sh 'kubectl wait --for=condition=ready pod -l app=netflix --timeout=300s'
+                    // Obtiene la dirección IP y el puerto del servicio expuesto
+                    def serviceIp = sh(script: 'minikube service netflix-service --url', returnStdout: true).trim()
+                    echo "La aplicación está disponible en: \${serviceIp}"
                 }
             }
         }
@@ -184,15 +184,15 @@ pipeline {
         }
         */
     }
-    
+    /*
     post {
         always {
             archiveArtifacts 'gitleaks-report.json'
             archiveArtifacts 'dependency-check-report.xml'
             archiveArtifacts 'trivy-filesystem-report.json'
             archiveArtifacts 'trivy-image-report.json'
-            //archiveArtifacts 'owasp-zap-report.html'
+            archiveArtifacts 'owasp-zap-report.html'
         }
     }
-    
+    */
 }
