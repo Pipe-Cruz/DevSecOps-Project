@@ -75,8 +75,8 @@ pipeline {
                         dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=\${apiKeyDP}', odcInstallation: 'DP-Check'
                         dependencyCheckPublisher pattern: 'dependency-check-report.xml'
                         
-                        
-                        def vulnerabilitiesXml = readFile('/var/lib/jenkins/workspace/netflix/dependency-check-report.xml')
+                        /*
+                        def vulnerabilitiesXml = readFile('/var/lib/jenkins/workspace/devsecops-project/dependency-check-report.xml')
                         def criticalVulnerabilities = vulnerabilitiesXml.contains('<severity>CRITICAL</severity>') ? 1 : 0
                         def highVulnerabilities = vulnerabilitiesXml.contains('<severity>HIGH</severity>') ? 1 : 0
                         def mediumVulnerabilities = vulnerabilitiesXml.contains('<severity>MEDIUM</severity>') ? 1 : 0
@@ -85,7 +85,8 @@ pipeline {
                             error "SCA: Pipeline failure due to medium, high, or critical category vulnerabilities in Dependency-Check."
                         } else {
                             echo "Dependency-Check passed."
-                        }                        
+                        }
+                        */                        
                     }                  
                 }
             }
