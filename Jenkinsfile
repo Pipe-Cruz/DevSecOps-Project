@@ -25,7 +25,7 @@ pipeline {
                 git branch: 'Jenkins-CICD', url: 'https://github.com/Pipe-Cruz/DevSecOps-Project.git' 
             }
         }
-        /*
+        
         stage('GitLeaks Scan') {
             steps {
                 script {
@@ -34,7 +34,7 @@ pipeline {
                 }
             }
         }
-        */
+        
         //SAST
         stage('SonarQube Scan') {
             steps {
@@ -66,7 +66,7 @@ pipeline {
                 sh "npm install"
             }
         }
-        /*
+        
         //SCA
         stage('Dependency-Check Scan') {
             steps {
@@ -96,7 +96,7 @@ pipeline {
                 sh "trivy fs -f json -o trivy-filesystem-report.json ."   
             }
         }
-        */
+        
         stage('Build & Tag Docker Image') {
             steps {
                 script {
@@ -109,7 +109,7 @@ pipeline {
                 }
             }
         }
-        /*
+        
         //IMAGE SECURITY
         stage('Trivy Image Scan') {
             steps {
@@ -128,7 +128,7 @@ pipeline {
                 }
             }
         }
-        */
+        
         stage('Push Docker Image') {
             steps {
                 script {
@@ -138,7 +138,7 @@ pipeline {
                 }
             }
         }
-        /*
+        
         stage('Deploy to container') {
             steps {
                 script {
@@ -148,7 +148,7 @@ pipeline {
                 }
             }
         }
-        */
+        /*
         stage('Deploy to Minikube') {
             steps {
                 script {
@@ -167,10 +167,9 @@ pipeline {
                 }
             }
         }
-
+        */
 
         //DAST
-        /*
         stage('OWASP ZAP Scan') {
             steps {
                 script {
@@ -184,9 +183,9 @@ pipeline {
                 }
             }
         }
-        */
+        
     }
-    /*
+    
     post {
         always {
             archiveArtifacts 'gitleaks-report.json'
@@ -196,5 +195,5 @@ pipeline {
             archiveArtifacts 'owasp-zap-report.html'
         }
     }
-    */
+    
 }
