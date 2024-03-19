@@ -35,9 +35,9 @@ pipeline {
                     sh 'cd git-secrets-1.3.0 && make install'
                     */
 
-                    sh 'sudo sh -c "echo \'deb https://gitsecret.jfrog.io/artifactory/git-secret-deb git-secret main\' >> /etc/apt/sources.list"'
-                    sh 'wget -qO - \'https://gitsecret.jfrog.io/artifactory/api/gpg/key/public\' | sudo apt-key add -'
-                    sh 'sudo apt-get update && sudo apt-get install -y git-secret'
+                    sh 'sh -c "echo \'deb https://gitsecret.jfrog.io/artifactory/git-secret-deb git-secret main\' >> /etc/apt/sources.list"'
+                    sh 'wget -qO - \'https://gitsecret.jfrog.io/artifactory/api/gpg/key/public\' | apt-key add -'
+                    sh 'apt-get update && apt-get install -y git-secret'
                     // Configuración de git-secrets
                     def gitSecretsOutput = sh(script: 'git secrets --scan', returnStdout: true).trim()
                     writeFile file: 'git-secrets-output.json', text: gitSecretsOutput
