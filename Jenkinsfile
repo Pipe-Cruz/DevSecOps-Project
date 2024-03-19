@@ -25,6 +25,29 @@ pipeline {
             }
         }
 
+        //PRE-COMMIT TOOLS
+        stage('Git-secrets') {
+            /*
+            sh 'wget https://github.com/awslabs/git-secrets/archive/refs/tags/v1.3.0.tar.gz'
+            sh 'tar -xvf v1.3.0.tar.gz'
+            sh 'cd git-secrets-1.3.0 && make install'
+            */
+
+            sh 'sudo sh -c "echo \'deb https://gitsecret.jfrog.io/artifactory/git-secret-deb git-secret main\' >> /etc/apt/sources.list"'
+            sh 'wget -qO - \'https://gitsecret.jfrog.io/artifactory/api/gpg/key/public\' | sudo apt-key add -'
+            sh 'sudo apt-get update && sudo apt-get install -y git-secret'
+            // Configuración de git-secrets
+            def gitSecretsOutput = sh(script: 'git secrets --scan', returnStdout: true).trim()
+            writeFile file: 'git-secrets-output.json', text: gitSecretsOutput
+
+            // Convertir la salida a formato HTML
+            sh 'jq . git-secrets-output.json > git-secrets-output.html'
+        }
+        /*
+        stage('Git-hound') {
+
+        }
+        */
         //SECRET SCANNING
         stage('GitLeaks Scan') {
             steps {
@@ -189,6 +212,7 @@ pipeline {
     
     post {
         always {
+            archiveArtifacts 'git-secrets-output.html'
             archiveArtifacts 'gitleaks-report.json'
             archiveArtifacts 'dependency-check-report.xml'
             archiveArtifacts 'trivy-filesystem-report.json'
