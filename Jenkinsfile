@@ -94,8 +94,7 @@ pipeline {
         
         stage('Trivy FileSystem Scan') {
             steps {
-                sh 'trivy fs -f json -o trivy-filesystem-report.json .'
-                sh 'jq . trivy-filesystem-report.json > trivy-filesystem-report.html'   
+                sh 'trivy fs -f json -o trivy-filesystem-report.json .'  
             }
         }
         
@@ -127,6 +126,14 @@ pipeline {
                         echo "Trivy Image Passed."
                     }
                     */
+                }
+            }
+        }
+
+        stage('Snyk Image Scan') {
+            steps {
+                script {
+                    sh 'snyk container monitor pipe7cruz/netflix:latest --org=4abc0bf0-c589-4fae-9797-1873d74cafd2'
                 }
             }
         }
@@ -188,7 +195,6 @@ pipeline {
             archiveArtifacts 'gitleaks-report.json'
             archiveArtifacts 'dependency-check-report.xml'
             archiveArtifacts 'trivy-filesystem-report.json'
-            archiveArtifacts 'trivy-filesystem-report.html'
             archiveArtifacts 'trivy-image-report.json'
             archiveArtifacts 'owasp-zap-report.html'
         }
