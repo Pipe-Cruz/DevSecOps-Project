@@ -25,30 +25,6 @@ pipeline {
             }
         }
 
-        //PRE-COMMIT TOOLS
-        stage('Git-secrets') {
-            steps {
-                script {
-                    
-                    sh 'wget https://github.com/awslabs/git-secrets/archive/refs/tags/v1.3.0.tar.gz'
-                    sh 'tar -xvf v1.3.0.tar.gz'
-                    sh 'cd git-secrets-1.3.0 && make install'
-                    
-                    // Configuración de git-secrets
-                    def gitSecretsOutput = sh(script: 'git secrets --scan', returnStdout: true).trim()
-                    writeFile file: 'git-secrets-output.json', text: gitSecretsOutput
-
-                    // Convertir la salida a formato HTML
-                    sh 'jq . git-secrets-output.json > git-secrets-output.html'
-                }
-            }
-
-        }
-        /*
-        stage('Git-hound') {
-
-        }
-        */
         //SECRET SCANNING
         stage('GitLeaks Scan') {
             steps {
@@ -118,7 +94,8 @@ pipeline {
         
         stage('Trivy FileSystem Scan') {
             steps {
-                sh "trivy fs -f json -o trivy-filesystem-report.json ."   
+                sh 'trivy fs -f json -o trivy-filesystem-report.json .'
+                sh 'jq . trivy-filesystem-report.json > trivy-filesystem-report.html'   
             }
         }
         
@@ -163,7 +140,7 @@ pipeline {
                 }
             }
         }
-        
+        /*
         stage('Deploy to container') {
             steps {
                 script {
@@ -173,26 +150,20 @@ pipeline {
                 }
             }
         }
-        /*
+        */
         stage('Deploy to Minikube') {
             steps {
                 script {
                     // Iniciar Minikube si no está en ejecución
                     sh 'minikube start'
-                    // Imprimir información del clúster de Kubernetes y contextos configurados
-                    sh 'kubectl config get-contexts'
-                    sh 'kubectl config current-context'
-
-                    sh 'kubectl apply -f kubernetes-deployment.yaml'
-                    //Esperar a que los pods estén en funcionamiento antes de continuar
-                    sh 'kubectl wait --for=condition=ready pod -l app=netflix --timeout=300s'
-                    // Obtiene la dirección IP y el puerto del servicio expuesto
-                    def serviceIp = sh(script: 'minikube service netflix-service --url', returnStdout: true).trim()
-                    echo "La aplicación está disponible en: \${serviceIp}"
+                    sh 'sleep 30'
+                    sh 'kubectl create deployment netflix --image=pipe7cruz/netflix:latest'
+                    sh 'kubectl expose deployment netflix --type=NodePort --port=8081'
+                    def serviceURL = sh(script: 'minikube service netflix --url', returnStdout: true).trim()
+                    echo "Netflix application is accessible at: ${serviceURL}"
                 }
             }
         }
-        */
 
         //DAST
         stage('OWASP ZAP Scan') {
@@ -213,10 +184,11 @@ pipeline {
     
     post {
         always {
-            archiveArtifacts 'git-secrets-output.html'
+            
             archiveArtifacts 'gitleaks-report.json'
             archiveArtifacts 'dependency-check-report.xml'
             archiveArtifacts 'trivy-filesystem-report.json'
+            archiveArtifacts 'trivy-filesystem-report.html'
             archiveArtifacts 'trivy-image-report.json'
             archiveArtifacts 'owasp-zap-report.html'
         }
