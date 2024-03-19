@@ -154,13 +154,12 @@ pipeline {
         stage('Deploy to Minikube') {
             steps {
                 script {
-                    // Iniciar Minikube si no está en ejecución
                     sh 'minikube start'
                     sh 'sleep 30'
                     sh 'kubectl create deployment netflix --image=pipe7cruz/netflix:latest'
                     sh 'kubectl expose deployment netflix --type=NodePort --port=8081'
                     def serviceURL = sh(script: 'minikube service netflix --url', returnStdout: true).trim()
-                    echo "Netflix application is accessible at: ${serviceURL}"
+                    echo "Netflix application is accessible at: \${serviceURL}"
                 }
             }
         }
