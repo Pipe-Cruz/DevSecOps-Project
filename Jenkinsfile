@@ -140,7 +140,7 @@ pipeline {
                 }
             }
         }
-        /*
+        
         stage('Deploy to container') {
             steps {
                 script {
@@ -150,7 +150,8 @@ pipeline {
                 }
             }
         }
-        */
+        
+        /*
         stage('Deploy to Minikube') {
             steps {
                 script {
@@ -163,7 +164,7 @@ pipeline {
                 }
             }
         }
-
+        */
         //DAST
         stage('OWASP ZAP Scan') {
             steps {
