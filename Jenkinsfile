@@ -19,13 +19,13 @@ pipeline {
             }
         }
 
-        //SECRET SCANNING
         stage('Git Checkout') {
             steps {
                 git branch: 'Jenkins-CICD', url: 'https://github.com/Pipe-Cruz/DevSecOps-Project.git' 
             }
         }
-        
+
+        //SECRET SCANNING
         stage('GitLeaks Scan') {
             steps {
                 script {
