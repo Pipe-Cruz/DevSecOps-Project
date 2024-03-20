@@ -8,7 +8,7 @@ pipeline {
 
     environment {
         SCANNER_HOME= tool 'sonar-scanner'
-        EC2_URL = 'http://44.194.185.232'
+        EC2_URL = 'http://34.192.57.54'
     }
 
     stages {
@@ -21,10 +21,10 @@ pipeline {
 
         stage('Git Checkout') {
             steps {
-                git branch: 'Jenkins-CICD', url: 'https://github.com/Pipe-Cruz/DevSecOps-Project.git' 
+                git branch: 'devsecops-project', url: 'https://github.com/Pipe-Cruz/DevSecOps-Project.git' 
             }
         }
-
+        
         //SECRET SCANNING
         stage('GitLeaks Scan') {
             steps {
@@ -43,7 +43,7 @@ pipeline {
                     sh "$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectKey=DevSecOps-project -Dsonar.projectName=DevSecOps-project"
                     }
                     /*
-                    withCredentials([usernamePassword(credentialsId: 'sonarAPI-token', usernameVariable: 'SONARQUBE_USERNAME', passwordVariable: 'SONARQUBE_PASSWORD')]) {
+                    withCredentials([usernamePassword(credentialsId: 'sonarqubeAPI', usernameVariable: 'SONARQUBE_USERNAME', passwordVariable: 'SONARQUBE_PASSWORD')]) {
                         def vulnerabilities = sh(script: """
                             curl -s -u \$SONARQUBE_USERNAME:\$SONARQUBE_PASSWORD -X GET \
                             "http://54.145.218.228:9000/api/issues/search?id=Final-lab&severities=MAJOR,CRITICAL,BLOCKER" \
@@ -71,7 +71,7 @@ pipeline {
         stage('Dependency-Check Scan') {
             steps {
                 script {
-                    withCredentials([string(credentialsId: 'DP-check-token', variable: 'apiKeyDP')]) {
+                    withCredentials([string(credentialsId: 'DPC-token', variable: 'apiKeyDP')]) {
                         dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=\${apiKeyDP}', odcInstallation: 'DP-Check'
                         dependencyCheckPublisher pattern: 'dependency-check-report.xml'
                         
@@ -86,7 +86,7 @@ pipeline {
                         } else {
                             echo "Dependency-Check passed."
                         }
-                        */                        
+                        */                     
                     }                  
                 }
             }
@@ -101,7 +101,7 @@ pipeline {
         stage('Build & Tag Docker Image') {
             steps {
                 script {
-                    withDockerRegistry(credentialsId: 'dockerhub-token', toolName: 'docker') {
+                    withDockerRegistry(credentialsId: 'dockerAPI', toolName: 'docker') {
                         withCredentials([string(credentialsId: 'TMDB_API_KEY_CREDENTIAL_ID', variable: 'TMDB_V3_API_KEY')]) {
                             sh "docker build --build-arg TMDB_V3_API_KEY=\${TMDB_V3_API_KEY} -t netflix ."
                             sh "docker tag netflix pipe7cruz/netflix:latest "
@@ -129,19 +129,11 @@ pipeline {
                 }
             }
         }
-
-        stage('Snyk Image Scan') {
-            steps {
-                script {
-                    sh 'snyk container monitor pipe7cruz/netflix:latest --org=4abc0bf0-c589-4fae-9797-1873d74cafd2'
-                }
-            }
-        }
         
         stage('Push Docker Image') {
             steps {
                 script {
-                    withDockerRegistry(credentialsId: 'dockerhub-token', toolName:'docker'){              
+                    withDockerRegistry(credentialsId: 'dockerAPI', toolName:'docker'){              
                         sh "docker push pipe7cruz/netflix:latest"
                     }
                 }
@@ -190,8 +182,7 @@ pipeline {
     }
     
     post {
-        always {
-            
+        always {            
             archiveArtifacts 'gitleaks-report.json'
             archiveArtifacts 'dependency-check-report.xml'
             archiveArtifacts 'trivy-filesystem-report.json'
