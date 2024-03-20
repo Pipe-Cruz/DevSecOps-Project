@@ -72,7 +72,8 @@ pipeline {
             steps {
                 script {
                     withCredentials([string(credentialsId: 'DP-Check-token', variable: 'apiKeyDP')]) {
-                        dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=\${apiKeyDP}', odcInstallation: 'DP-Check'
+                        dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=5b07ca40-1e23-4395-a7aa-38739b4b9991', odcInstallation: 'DP-Check'
+                        //dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=\${apiKeyDP}', odcInstallation: 'DP-Check'
                         dependencyCheckPublisher pattern: 'dependency-check-report.xml'
                         
                         /*
