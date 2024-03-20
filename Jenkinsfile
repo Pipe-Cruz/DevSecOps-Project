@@ -66,23 +66,16 @@ pipeline {
                 sh "npm install"
             }
         }
-        
-        stage('OWASP FS SCAN') {
-            steps {
-                dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --nvdApiKey=6ceee36d-b162-457f-afcf-4fd12ec772f4', odcInstallation: 'DP-Check'
-                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-            }
-        }
-        /*
+
         //SCA
         stage('Dependency-Check Scan') {
             steps {
                 script {
                     withCredentials([string(credentialsId: 'DP-Check-token', variable: 'apiKeyDP')]) {
-                        dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=6ceee36d-b162-457f-afcf-4fd12ec772f4', odcInstallation: 'DP-Check'
+                        dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=\${apiKeyDP}', odcInstallation: 'DP-Check'
                         dependencyCheckPublisher pattern: 'dependency-check-report.xml'
                         
-                        
+                        /*
                         def vulnerabilitiesXml = readFile('/var/lib/jenkins/workspace/devsecops-project/dependency-check-report.xml')
                         def criticalVulnerabilities = vulnerabilitiesXml.contains('<severity>CRITICAL</severity>') ? 1 : 0
                         def highVulnerabilities = vulnerabilitiesXml.contains('<severity>HIGH</severity>') ? 1 : 0
@@ -93,12 +86,12 @@ pipeline {
                         } else {
                             echo "Dependency-Check passed."
                         }
-                                             
+                        */                   
                     }                  
                 }
             }
         }
-        */
+        
         stage('Trivy FileSystem Scan') {
             steps {
                 sh 'trivy fs -f json -o trivy-filesystem-report.json .'  
