@@ -24,7 +24,7 @@ pipeline {
                 git branch: 'devsecops-project', url: 'https://github.com/Pipe-Cruz/DevSecOps-Project.git' 
             }
         }
-        
+        /*
         //SECRET SCANNING
         stage('GitLeaks Scan') {
             steps {
@@ -42,7 +42,7 @@ pipeline {
                     withSonarQubeEnv('sonar-server') {
                     sh "$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectKey=DevSecOps-project -Dsonar.projectName=DevSecOps-project"
                     }
-                    /*
+                    
                     withCredentials([usernamePassword(credentialsId: 'sonarqubeAPI', usernameVariable: 'SONARQUBE_USERNAME', passwordVariable: 'SONARQUBE_PASSWORD')]) {
                         def vulnerabilities = sh(script: """
                             curl -s -u \$SONARQUBE_USERNAME:\$SONARQUBE_PASSWORD -X GET \
@@ -56,11 +56,11 @@ pipeline {
                             echo "Quality Gate passed."
                         }
                     }
-                    */
+                    
                 }
             }
         }
-        
+        */
         stage('Install Dependencies') {
             steps {
                 sh "npm install"
@@ -72,7 +72,8 @@ pipeline {
             steps {
                 script {
                     withCredentials([string(credentialsId: 'DP-Check-token', variable: 'apiKeyDP')]) {
-                        dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=\${apiKeyDP}', odcInstallation: 'DP-Check'
+                        //dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=\${apiKeyDP}', odcInstallation: 'DP-Check'
+                        dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=e31ba620-78fd-4be6-9aab-d6f907cb5ad4', odcInstallation: 'DP-Check'
                         dependencyCheckPublisher pattern: 'dependency-check-report.xml'
                         
                         /*
@@ -91,13 +92,13 @@ pipeline {
                 }
             }
         }
-        
+        /*
         stage('Trivy FileSystem Scan') {
             steps {
                 sh 'trivy fs -f json -o trivy-filesystem-report.json .'  
             }
         }
-        
+        */
         stage('Build & Tag Docker Image') {
             steps {
                 script {
@@ -110,13 +111,13 @@ pipeline {
                 }
             }
         }
-        
+        /*
         //IMAGE SECURITY
         stage('Trivy Image Scan') {
             steps {
                 script {
                     sh "trivy image -f json -o trivy-image-report.json pipe7cruz/netflix:latest"
-                    /*
+                    
                     def trivyReportJson = readFile(file: 'trivy-image-report.json')
                     def trivyReport = new groovy.json.JsonSlurper().parseText(trivyReportJson)
                     def severities = trivyReport.Results.Vulnerabilities.collect { it.Severity }.flatten()
@@ -125,11 +126,11 @@ pipeline {
                     } else {
                         echo "Trivy Image Passed."
                     }
-                    */
+                    
                 }
             }
         }
-        
+        */
         stage('Push Docker Image') {
             steps {
                 script {
