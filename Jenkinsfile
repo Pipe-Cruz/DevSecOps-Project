@@ -13,11 +13,10 @@ pipeline {
 
     stages {
         
-        stage('Clean and Create Workspace') {
+        stage('Clean Workspace') {
             steps{
                 script{
                     cleanWs()
-                    sh 'mkdir -p reports-tools'
                 }      
             }
         }
@@ -33,7 +32,6 @@ pipeline {
             steps {
                 script {
                     sh 'docker run -v \${WORKSPACE}:/path --name gitleaks ghcr.io/gitleaks/gitleaks:latest -s="/path" -f=json > gitleaks-report.json'
-                    mv  'gitleaks-report.json reports-tools'
                     sh "docker rm -f gitleaks"
                 }
             }
@@ -100,7 +98,7 @@ pipeline {
 
         stage('Trivy FileSystem Scan') {
             steps {
-                sh 'trivy fs -f json -o reports-tools/trivy-filesystem-report.json .'  
+                sh 'trivy fs -f json -o trivy-filesystem-report.json .'  
             }
         }
         
@@ -121,7 +119,7 @@ pipeline {
         stage('Trivy Image Scan') {
             steps {
                 script {
-                    sh "trivy image -f json -o reports-tools/trivy-image-report.json pipe7cruz/netflix:latest"
+                    sh "trivy image -f json -o trivy-image-report.json pipe7cruz/netflix:latest"
                     /*
                     def trivyReportJson = readFile(file: 'trivy-image-report.json')
                     def trivyReport = new groovy.json.JsonSlurper().parseText(trivyReportJson)
@@ -179,7 +177,7 @@ pipeline {
                     sh "docker run -dt --name owasp owasp/zap2docker-stable /bin/bash"
                     sh "docker exec owasp mkdir /zap/wrk"
                     sh "docker exec owasp zap-baseline.py -t \${EC2_URL}:8081 -r owasp-zap-report.html -I"
-                    sh "docker cp owasp:/zap/wrk/owasp-zap-report.html \${WORKSPACE}/reports-tools/owasp-zap-report.html"
+                    sh "docker cp owasp:/zap/wrk/owasp-zap-report.html \${WORKSPACE}/owasp-zap-report.html"
                     sh "docker rm -f owasp"
                 }
             }
