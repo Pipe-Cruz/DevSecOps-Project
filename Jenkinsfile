@@ -32,7 +32,7 @@ pipeline {
         stage('GitLeaks Scan') {
             steps {
                 script {
-                    sh 'docker run -v \${WORKSPACE}:/path --name gitleaks ghcr.io/gitleaks/gitleaks:latest -s="/path" -f=json > reports-tools/gitleaks-report.json'
+                    sh 'docker run -v \${WORKSPACE}:/path --name gitleaks ghcr.io/gitleaks/gitleaks:latest -s="/path" -f=json > reports-tools\gitleaks-report.json'
                     sh "docker rm -f gitleaks"
                 }
             }
