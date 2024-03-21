@@ -93,13 +93,6 @@ pipeline {
             }
         }
         */
-        stage('Snyk Scan'){
-            steps {
-                script {
-                    sh 'snyk monitor --all-projects --org=71d1dfec-cb0b-4596-b1cf-07c962fc0db2'
-                }
-            }
-        }
 
         stage('Trivy FileSystem Scan') {
             steps {
@@ -193,7 +186,7 @@ pipeline {
     post {
         always {            
             archiveArtifacts 'gitleaks-report.json'
-            archiveArtifacts 'dependency-check-report.xml'
+            //archiveArtifacts 'dependency-check-report.xml'
             archiveArtifacts 'trivy-filesystem-report.json'
             archiveArtifacts 'trivy-image-report.json'
             archiveArtifacts 'owasp-zap-report.html'
