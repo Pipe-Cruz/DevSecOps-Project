@@ -72,8 +72,8 @@ pipeline {
             steps {
                 script {
                     withCredentials([string(credentialsId: 'DP-Check-token', variable: 'apiKeyDP')]) {
-                        dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=5b07ca40-1e23-4395-a7aa-38739b4b9991', odcInstallation: 'DP-Check'
-                        //dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=\${apiKeyDP}', odcInstallation: 'DP-Check'
+                        //dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=5b07ca40-1e23-4395-a7aa-38739b4b9991', odcInstallation: 'DP-Check'
+                        dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=\${apiKeyDP}', odcInstallation: 'DP-Check'
                         dependencyCheckPublisher pattern: 'dependency-check-report.xml'
                         
                         /*
@@ -184,10 +184,10 @@ pipeline {
     
     post {
         always {            
-            archiveArtifacts 'gitleaks-report.json'
+            //archiveArtifacts 'gitleaks-report.json'
             archiveArtifacts 'dependency-check-report.xml'
-            archiveArtifacts 'trivy-filesystem-report.json'
-            archiveArtifacts 'trivy-image-report.json'
+            //archiveArtifacts 'trivy-filesystem-report.json'
+            //archiveArtifacts 'trivy-image-report.json'
             archiveArtifacts 'owasp-zap-report.html'
         }
     }
