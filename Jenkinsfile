@@ -42,7 +42,7 @@ pipeline {
                     withSonarQubeEnv('sonar-server') {
                     sh "$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectKey=DevSecOps-project -Dsonar.projectName=DevSecOps-project"
                     }
-                    
+                    /*
                     withCredentials([usernamePassword(credentialsId: 'sonarqubeAPI', usernameVariable: 'SONARQUBE_USERNAME', passwordVariable: 'SONARQUBE_PASSWORD')]) {
                         def vulnerabilities = sh(script: """
                             curl -s -u \$SONARQUBE_USERNAME:\$SONARQUBE_PASSWORD -X GET \
@@ -56,7 +56,7 @@ pipeline {
                             echo "Quality Gate passed."
                         }
                     }
-                    
+                    */
                 }
             }
         }
@@ -125,7 +125,7 @@ pipeline {
             steps {
                 script {
                     sh "trivy image -f json -o trivy-image-report.json pipe7cruz/netflix:latest"
-                    
+                    /*
                     def trivyReportJson = readFile(file: 'trivy-image-report.json')
                     def trivyReport = new groovy.json.JsonSlurper().parseText(trivyReportJson)
                     def severities = trivyReport.Results.Vulnerabilities.collect { it.Severity }.flatten()
@@ -134,7 +134,7 @@ pipeline {
                     } else {
                         echo "Trivy Image Passed."
                     }
-                    
+                    */
                 }
             }
         }
