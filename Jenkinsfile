@@ -24,7 +24,7 @@ pipeline {
                 git branch: 'devsecops-project', url: 'https://github.com/Pipe-Cruz/DevSecOps-Project.git' 
             }
         }
-        /*
+        
         //SECRET SCANNING
         stage('GitLeaks Scan') {
             steps {
@@ -60,7 +60,7 @@ pipeline {
                 }
             }
         }
-        */
+        
         stage('Install Dependencies') {
             steps {
                 sh "npm install"
@@ -68,6 +68,7 @@ pipeline {
         }
 
         //SCA
+        /*
         stage('Dependency-Check Scan') {
             steps {
                 script {
@@ -75,7 +76,7 @@ pipeline {
                         dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=\${apiKeyDP}', odcInstallation: 'DP-Check'
                         dependencyCheckPublisher pattern: 'dependency-check-report.xml'
                         
-                        /*
+                        
                         def vulnerabilitiesXml = readFile('/var/lib/jenkins/workspace/devsecops-project/dependency-check-report.xml')
                         def criticalVulnerabilities = vulnerabilitiesXml.contains('<severity>CRITICAL</severity>') ? 1 : 0
                         def highVulnerabilities = vulnerabilitiesXml.contains('<severity>HIGH</severity>') ? 1 : 0
@@ -86,12 +87,20 @@ pipeline {
                         } else {
                             echo "Dependency-Check passed."
                         }
-                        */                   
+                                           
                     }                  
                 }
             }
         }
-        /*
+        */
+        stage('Snyk Scan'){
+            steps {
+                script {
+                    sh 'snyk monitor --all-projects --org=71d1dfec-cb0b-4596-b1cf-07c962fc0db2'
+                }
+            }
+        }
+
         stage('Trivy FileSystem Scan') {
             steps {
                 sh 'trivy fs -f json -o trivy-filesystem-report.json .'  
@@ -110,7 +119,7 @@ pipeline {
                 }
             }
         }
-        /*
+        
         //IMAGE SECURITY
         stage('Trivy Image Scan') {
             steps {
@@ -129,7 +138,7 @@ pipeline {
                 }
             }
         }
-        */
+        
         stage('Push Docker Image') {
             steps {
                 script {
@@ -183,10 +192,10 @@ pipeline {
     
     post {
         always {            
-            //archiveArtifacts 'gitleaks-report.json'
+            archiveArtifacts 'gitleaks-report.json'
             archiveArtifacts 'dependency-check-report.xml'
-            //archiveArtifacts 'trivy-filesystem-report.json'
-            //archiveArtifacts 'trivy-image-report.json'
+            archiveArtifacts 'trivy-filesystem-report.json'
+            archiveArtifacts 'trivy-image-report.json'
             archiveArtifacts 'owasp-zap-report.html'
         }
     }
