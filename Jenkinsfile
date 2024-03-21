@@ -106,7 +106,7 @@ pipeline {
                 sh 'trivy fs -f json -o trivy-filesystem-report.json .'  
             }
         }
-        */
+        
         stage('Build & Tag Docker Image') {
             steps {
                 script {
