@@ -70,7 +70,7 @@ pipeline {
         }
 
         //SCA
-        /*
+        
         stage('Dependency-Check Scan') {
             steps {
                 script {
@@ -78,7 +78,7 @@ pipeline {
                         dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=\${apiKeyDP}', odcInstallation: 'DP-Check'
                         dependencyCheckPublisher pattern: 'dependency-check-report.xml'
                         
-                        
+                        /*
                         def vulnerabilitiesXml = readFile('/var/lib/jenkins/workspace/devsecops-project/dependency-check-report.xml')
                         def criticalVulnerabilities = vulnerabilitiesXml.contains('<severity>CRITICAL</severity>') ? 1 : 0
                         def highVulnerabilities = vulnerabilitiesXml.contains('<severity>HIGH</severity>') ? 1 : 0
@@ -89,12 +89,12 @@ pipeline {
                         } else {
                             echo "Dependency-Check passed."
                         }
-                                           
+                        */                 
                     }                  
                 }
             }
         }
-        */
+        
 
         stage('Trivy FileSystem Scan') {
             steps {
