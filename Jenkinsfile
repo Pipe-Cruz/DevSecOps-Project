@@ -188,7 +188,7 @@ pipeline {
     post {
         always {            
             archiveArtifacts 'gitleaks-report.json'
-            //archiveArtifacts 'dependency-check-report.xml'
+            archiveArtifacts 'dependency-check-report.xml'
             archiveArtifacts 'trivy-filesystem-report.json'
             archiveArtifacts 'trivy-image-report.json'
             archiveArtifacts 'owasp-zap-report.html'
