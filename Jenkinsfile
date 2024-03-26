@@ -194,7 +194,7 @@ pipeline {
             archiveArtifacts 'owasp-zap-report.html'
         }
 
-        options {
+        success {
             withCredentials([string(credentialsId: 'outlook', variable: 'pass_outlook')]) {
                 emailext (
                 to: 'felipe.cruz@3it.cl',
