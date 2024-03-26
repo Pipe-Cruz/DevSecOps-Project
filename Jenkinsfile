@@ -195,23 +195,11 @@ pipeline {
         }
 
         success {
-            withCredentials([string(credentialsId: 'outlook', variable: 'pass_outlook')]) {
-                emailext (
-                to: 'felipe.cruz@3it.cl',
-                subject: 'Notificación de éxito de construcción',
-                body: 'La construcción se ha completado exitosamente.',
-                attachmentsPattern: '**/gitleaks-report.json, **/trivy-filesystem-report.json',
-
-                mimeType: 'text/html',
-                attachLog: true,
-                from: 'jenkins@tudominio.com', // Dirección de correo electrónico del remitente
-                smtpServer: 'smtp.office365.com', // Servidor SMTP de Office 365
-                smtpPort: '565', // Puerto SMTP
-                username: 'felipe.cruz@3it.cl', // Tu dirección de correo electrónico de Office 365
-                password: env.pass_outlook // La contraseña de tu cuenta de Office 365 (se recomienda utilizar una variable de entorno para protegerla)
-                )
-            }
-        }  
-    }
-
+            emailext attachLog: true,
+                subject: "'${currentBuild.result}'",
+                body: "Pipeline exitoso, se adjuntan reportes."
+                to: "felipecruz.cvg2000@gmail.com",
+                attachmentsPattern: "gitleaks-report.json"
+        }
+    } 
 }
