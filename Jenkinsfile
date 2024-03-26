@@ -193,6 +193,25 @@ pipeline {
             archiveArtifacts 'trivy-image-report.json'
             archiveArtifacts 'owasp-zap-report.html'
         }
+
+        success {
+            // Configuración de correo electrónico en caso de éxito
+            emailext (
+                to: 'felipe.cruz@3it.cl',
+                subject: 'Notificación de éxito de construcción',
+                body: 'La construcción se ha completado exitosamente.',
+                attachmentsPattern: '**/gitleaks-report.json, **/trivy-filesystem-report.json' // Patrón de archivos a adjuntar
+            )
+        }
+
+        failure {
+            // Configuración de correo electrónico en caso de fallo
+            emailext (
+                to: 'felipe.cruz@3it.cl',
+                subject: 'Notificación de fallo de construcción',
+                body: 'La construcción ha fallado.'
+            )
+        }   
     }
-    
+
 }
