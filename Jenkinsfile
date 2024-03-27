@@ -76,8 +76,7 @@ pipeline {
                 script {
                     withCredentials([string(credentialsId: 'DP-Check-token', variable: 'apiKeyDP')]) {
                         dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=\${apiKeyDP}', odcInstallation: 'DP-Check'
-                        dependencyCheckPublisher pattern: 'dependency-check-report.xml'
-                        dependencyCheckPublisher pattern: 'dependency-check-report.html'
+                        dependencyCheckPublisher pattern: 'dependency-check-report.xml, dependency-check-report.html'
                         
                         /*
                         def vulnerabilitiesXml = readFile('/var/lib/jenkins/workspace/devsecops-project/dependency-check-report.xml')
