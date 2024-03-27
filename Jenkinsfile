@@ -192,14 +192,20 @@ pipeline {
             archiveArtifacts 'trivy-filesystem-report.json'
             archiveArtifacts 'trivy-image-report.json'
             archiveArtifacts 'owasp-zap-report.html'
-        }
 
-        always {
             emailext attachLog:true,
                 subject: "SUCCESS JENKINS",
-                body: "Project: \${env.JOB_NAME}<br/>" + "url: \${ENV.build_url}<br/>",
+                body: "Project: ${env.JOB_NAME}<br/>" + "Build Number: ${env.BUILD_NUMBER}<br/>" + "URL: ${env.BUILD_URL}<br/>",
                 to: 'felipecruz.cvg2000@gmail.com',
                 attachmentsPattern: 'gitleaks-report.json'
+
+        }
+
+        failure {
+            emailext attachLog:true,
+                subject: "SUCCESS JENKINS",
+                body: "Project: ${env.JOB_NAME}<br/>" +  "Build Number: ${env.BUILD_NUMBER}<br/>" + "url: ${env.BUILD_URL}<br/>",
+                to: 'felipecruz.cvg2000@gmail.com',
         }
     } 
 }
