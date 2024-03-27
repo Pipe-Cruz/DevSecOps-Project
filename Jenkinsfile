@@ -186,7 +186,7 @@ pipeline {
     }
     
     post {
-        always {            
+        success {            
             archiveArtifacts 'gitleaks-report.json'
             archiveArtifacts 'dependency-check-report.xml'
             archiveArtifacts 'trivy-filesystem-report.json'
@@ -194,12 +194,12 @@ pipeline {
             archiveArtifacts 'owasp-zap-report.html'
         }
 
-        success {
-            emailext attachLog: true,
-                subject: "'${currentBuild.result}'",
-                body: "Pipeline exitoso, se adjuntan reportes."
-                to: "felipecruz.cvg2000@gmail.com",
-                attachmentsPattern: "gitleaks-report.json"
+        always {
+            emailext attachLog:true,
+                subject: "SUCCESS JENKINS",
+                body: "Project: \${env.JOB_NAME}<br/>" + "url: \${ENV.build_url}<br/>",
+                to: 'felipecruz.cvg2000@gmail.com',
+                attachmentsPattern: 'gitleaks-report.json'
         }
     } 
 }
