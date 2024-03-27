@@ -27,7 +27,6 @@ pipeline {
             }
         }
         
-        /*
         stage('GitLeaks Scan') {
             steps {
                 script {
@@ -37,14 +36,13 @@ pipeline {
             }
         }
         
-        
         stage('SonarQube Scan') {
             steps {
                 script {
                     withSonarQubeEnv('sonar-server') {
                     sh "$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectKey=DevSecOps-project -Dsonar.projectName=DevSecOps-project"
                     }
-                    
+                    /*
                     withCredentials([usernamePassword(credentialsId: 'sonarqubeAPI', usernameVariable: 'SONARQUBE_USERNAME', passwordVariable: 'SONARQUBE_PASSWORD')]) {
                         def vulnerabilities = sh(script: """
                             curl -s -u \$SONARQUBE_USERNAME:\$SONARQUBE_PASSWORD -X GET \
@@ -58,26 +56,24 @@ pipeline {
                             echo "Quality Gate passed."
                         }
                     }
-                    
+                    */
                 }
             }
         }
-        */
+        
         stage('Install Dependencies') {
             steps {
                 sh "npm install"
             }
         }
-
-        /*        
+       
         stage('Dependency-Check Scan') {
             steps {
                 script {
                     withCredentials([string(credentialsId: 'DP-Check-token', variable: 'apiKeyDP')]) {
                         dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=\${apiKeyDP}', odcInstallation: 'DP-Check'
                         dependencyCheckPublisher pattern: 'dependency-check-report.xml'
-                        
-                        
+                        /*
                         def vulnerabilitiesXml = readFile('/var/lib/jenkins/workspace/devsecops-project/dependency-check-report.xml')
                         def criticalVulnerabilities = vulnerabilitiesXml.contains('<severity>CRITICAL</severity>') ? 1 : 0
                         def highVulnerabilities = vulnerabilitiesXml.contains('<severity>HIGH</severity>') ? 1 : 0
@@ -88,7 +84,7 @@ pipeline {
                         } else {
                             echo "Dependency-Check passed."
                         }
-                                         
+                        */                
                     }                  
                 }
             }
@@ -100,7 +96,7 @@ pipeline {
                 sh 'trivy fs -f json -o trivy-filesystem-report.json .'  
             }
         }
-        */
+        
         stage('Build & Tag Docker Image') {
             steps {
                 script {
@@ -114,12 +110,11 @@ pipeline {
             }
         }
         
-        /*
         stage('Trivy Image Scan') {
             steps {
                 script {
                     sh "trivy image -f json -o trivy-image-report.json pipe7cruz/netflix:latest"
-                    
+                    /*
                     def trivyReportJson = readFile(file: 'trivy-image-report.json')
                     def trivyReport = new groovy.json.JsonSlurper().parseText(trivyReportJson)
                     def severities = trivyReport.Results.Vulnerabilities.collect { it.Severity }.flatten()
@@ -128,11 +123,11 @@ pipeline {
                     } else {
                         echo "Trivy Image Passed."
                     }
-                    
+                    */
                 }
             }
         }
-        */
+        
         stage('Push Docker Image') {
             steps {
                 script {
@@ -153,22 +148,6 @@ pipeline {
             }
         }
         
-        
-        stage('Deploy to Minikube') {
-            steps {
-                script {
-                    //sh 'sudo rm -rf /var/lib/minikube/etcd/*'
-                    sh 'minikube start'
-                    sh 'sleep 30'
-                    sh 'kubectl create deployment netflix --image=pipe7cruz/netflix:latest'
-                    sh 'kubectl expose deployment netflix --type=NodePort --port=8081'
-                    def serviceURL = sh(script: 'minikube service netflix --url', returnStdout: true).trim()
-                    echo "Netflix application is accessible at: \${serviceURL}"
-                }
-            }
-        }
-        
-        /*
         stage('OWASP ZAP Scan') {
             steps {
                 script {
@@ -182,10 +161,9 @@ pipeline {
                 }
             }
         }
-        */
+        
     }
     
-    /*
     post {
         success {            
             archiveArtifacts 'gitleaks-report.json'
@@ -209,5 +187,5 @@ pipeline {
                 to: 'felipecruz.cvg2000@gmail.com'
         }
     }
-    */
+
 }
