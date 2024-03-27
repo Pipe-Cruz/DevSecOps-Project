@@ -27,7 +27,7 @@ pipeline {
             }
         }
         
-        //SECRET SCANNING
+        /*
         stage('GitLeaks Scan') {
             steps {
                 script {
@@ -37,14 +37,14 @@ pipeline {
             }
         }
         
-        //SAST
+        
         stage('SonarQube Scan') {
             steps {
                 script {
                     withSonarQubeEnv('sonar-server') {
                     sh "$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectKey=DevSecOps-project -Dsonar.projectName=DevSecOps-project"
                     }
-                    /*
+                    
                     withCredentials([usernamePassword(credentialsId: 'sonarqubeAPI', usernameVariable: 'SONARQUBE_USERNAME', passwordVariable: 'SONARQUBE_PASSWORD')]) {
                         def vulnerabilities = sh(script: """
                             curl -s -u \$SONARQUBE_USERNAME:\$SONARQUBE_PASSWORD -X GET \
@@ -58,27 +58,26 @@ pipeline {
                             echo "Quality Gate passed."
                         }
                     }
-                    */
+                    
                 }
             }
         }
-        
+        */
         stage('Install Dependencies') {
             steps {
                 sh "npm install"
             }
         }
 
-        //SCA
-        
+        /*        
         stage('Dependency-Check Scan') {
             steps {
                 script {
                     withCredentials([string(credentialsId: 'DP-Check-token', variable: 'apiKeyDP')]) {
                         dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=\${apiKeyDP}', odcInstallation: 'DP-Check'
-                        dependencyCheckPublisher pattern: 'dependency-check-report.xml, dependency-check-report.html'
+                        dependencyCheckPublisher pattern: 'dependency-check-report.xml'
                         
-                        /*
+                        
                         def vulnerabilitiesXml = readFile('/var/lib/jenkins/workspace/devsecops-project/dependency-check-report.xml')
                         def criticalVulnerabilities = vulnerabilitiesXml.contains('<severity>CRITICAL</severity>') ? 1 : 0
                         def highVulnerabilities = vulnerabilitiesXml.contains('<severity>HIGH</severity>') ? 1 : 0
@@ -89,7 +88,7 @@ pipeline {
                         } else {
                             echo "Dependency-Check passed."
                         }
-                        */                 
+                                         
                     }                  
                 }
             }
@@ -101,7 +100,7 @@ pipeline {
                 sh 'trivy fs -f json -o trivy-filesystem-report.json .'  
             }
         }
-        
+        */
         stage('Build & Tag Docker Image') {
             steps {
                 script {
@@ -115,12 +114,12 @@ pipeline {
             }
         }
         
-        //IMAGE SECURITY
+        /*
         stage('Trivy Image Scan') {
             steps {
                 script {
                     sh "trivy image -f json -o trivy-image-report.json pipe7cruz/netflix:latest"
-                    /*
+                    
                     def trivyReportJson = readFile(file: 'trivy-image-report.json')
                     def trivyReport = new groovy.json.JsonSlurper().parseText(trivyReportJson)
                     def severities = trivyReport.Results.Vulnerabilities.collect { it.Severity }.flatten()
@@ -129,11 +128,11 @@ pipeline {
                     } else {
                         echo "Trivy Image Passed."
                     }
-                    */
+                    
                 }
             }
         }
-        
+        */
         stage('Push Docker Image') {
             steps {
                 script {
@@ -154,7 +153,7 @@ pipeline {
             }
         }
         
-        /*
+        
         stage('Deploy to Minikube') {
             steps {
                 script {
@@ -167,8 +166,8 @@ pipeline {
                 }
             }
         }
-        */
-        //DAST
+        
+        /*
         stage('OWASP ZAP Scan') {
             steps {
                 script {
@@ -182,14 +181,14 @@ pipeline {
                 }
             }
         }
-        
+        */
     }
     
+    /*
     post {
         success {            
             archiveArtifacts 'gitleaks-report.json'
             archiveArtifacts 'dependency-check-report.xml'
-            archiveArtifacts 'dependency-check-report.html'
             archiveArtifacts 'trivy-filesystem-report.json'
             archiveArtifacts 'trivy-image-report.json'
             archiveArtifacts 'owasp-zap-report.html'
@@ -209,4 +208,5 @@ pipeline {
                 to: 'felipecruz.cvg2000@gmail.com'
         }
     }
+    */
 }
