@@ -157,6 +157,7 @@ pipeline {
         stage('Deploy to Minikube') {
             steps {
                 script {
+                    //sh 'sudo rm -rf /var/lib/minikube/etcd/*'
                     sh 'minikube start'
                     sh 'sleep 30'
                     sh 'kubectl create deployment netflix --image=pipe7cruz/netflix:latest'
