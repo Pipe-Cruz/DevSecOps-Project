@@ -77,6 +77,7 @@ pipeline {
                     withCredentials([string(credentialsId: 'DP-Check-token', variable: 'apiKeyDP')]) {
                         dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey=\${apiKeyDP}', odcInstallation: 'DP-Check'
                         dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+                        dependencyCheckPublisher pattern: 'dependency-check-report.html'
                         
                         /*
                         def vulnerabilitiesXml = readFile('/var/lib/jenkins/workspace/devsecops-project/dependency-check-report.xml')
@@ -189,23 +190,24 @@ pipeline {
         success {            
             archiveArtifacts 'gitleaks-report.json'
             archiveArtifacts 'dependency-check-report.xml'
+            archiveArtifacts 'dependency-check-report.html'
             archiveArtifacts 'trivy-filesystem-report.json'
             archiveArtifacts 'trivy-image-report.json'
             archiveArtifacts 'owasp-zap-report.html'
 
             emailext attachLog:true,
-                subject: "SUCCESS JENKINS",
+                subject: "${currentBuild.result}",
                 body: "Project: ${env.JOB_NAME}<br/>" + "Build Number: ${env.BUILD_NUMBER}<br/>" + "URL: ${env.BUILD_URL}<br/>",
                 to: 'felipecruz.cvg2000@gmail.com',
-                attachmentsPattern: 'gitleaks-report.json'
+                attachmentsPattern: 'gitleaks-report.json, trivy-filesystem-report.json, trivy-image-report.json, owasp-zap-report.html'
 
         }
 
         failure {
             emailext attachLog:true,
-                subject: "SUCCESS JENKINS",
+                subject: "${currentBuild.result}",
                 body: "Project: ${env.JOB_NAME}<br/>" +  "Build Number: ${env.BUILD_NUMBER}<br/>" + "url: ${env.BUILD_URL}<br/>",
-                to: 'felipecruz.cvg2000@gmail.com',
+                to: 'felipecruz.cvg2000@gmail.com'
         }
-    } 
+    }
 }
